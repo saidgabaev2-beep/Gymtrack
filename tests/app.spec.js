@@ -1,0 +1,24 @@
+import {test,expect} from '@playwright/test';
+test('log a workout, persist it, record body data and schedule a session',async({page})=>{
+await page.goto('http://127.0.0.1:5173');
+await page.getByRole('button',{name:'Start workout',exact:true}).click();
+await page.getByRole('button',{name:'Upper body strength 4 exercises'}).click();
+await page.getByLabel('Bench press set 1 weight').fill('50');
+await page.getByLabel('Bench press set 1 reps').fill('10');
+await page.getByLabel('Set completed').first().check();
+await page.getByRole('button',{name:'Finish workout'}).click();
+await expect(page.getByText('500 kg', {exact:true})).toBeVisible();
+await page.reload();await expect(page.getByText('500 kg',{exact:true})).toBeVisible();
+await page.getByRole('button',{name:'Body',exact:true}).click();
+await page.getByLabel('Weight (kg)',{exact:true}).fill('75');
+await page.getByRole('button',{name:'Save check-in'}).click();
+await expect(page.getByText('75 kg',{exact:true})).toBeVisible();
+await page.getByRole('button',{name:'Plan',exact:true}).click();
+await page.getByLabel('Planned date').fill('2026-12-01');
+await page.getByRole('button',{name:'Schedule session'}).click();
+await expect(page.getByText('2026-12-01',{exact:true})).toBeVisible();
+await page.setViewportSize({width:390,height:844});
+await page.getByRole('button',{name:'Overview',exact:true}).click();
+await expect(page.locator('h1')).toBeVisible();
+expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
+});
